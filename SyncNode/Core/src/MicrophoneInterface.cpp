@@ -1,10 +1,9 @@
 #include "MicrophoneInterface.hpp"
 
-
 int MicInterface::init(){
 	#ifdef __arm__
 	int lv_retValue;
-	char* lp_pcmName = (char *)PCM_NAME;
+	char* lp_pcmName = (char*)PCM_NAME;
 	snd_pcm_info_t* lp_info;
 
 	snd_output_stdio_attach(&op_log, stderr, 0);
@@ -102,7 +101,7 @@ int MicInterface::setParams(){
 	else
 		lv_retValue = snd_pcm_hw_params_set_period_size_near(op_handle, lp_hardwareParams, &ov_periodFrames, 0);
 	
-	if (ov_bufferTime > 0) 
+	if (ov_bufferTime > 0)
 		lv_retValue = snd_pcm_hw_params_set_buffer_time_near(op_handle, lp_hardwareParams, &ov_bufferTime, 0);
 	else
 		lv_retValue = snd_pcm_hw_params_set_buffer_size_near(op_handle, lp_hardwareParams, &ov_bufferFrames);
@@ -139,7 +138,7 @@ int MicInterface::setParams(){
 	ov_bitsPerSample = snd_pcm_format_physical_width(ov_hardParams.ov_format);
 	ov_bitsPerFrame = ov_bitsPerSample * ov_hardParams.ov_channels;
 	ov_chunkBytes = ov_chunkSize * ov_bitsPerFrame / 8;
-	op_audioBuffer = (u_char*)malloc(ov_chunkBytes);
+	op_audioBuffer = (u_char*)malloc(ov_chunkBytes * 2);
 
 	if (op_audioBuffer == nullptr) {
 		LOG_ERROR << "not enough memory";
@@ -159,7 +158,6 @@ size_t MicInterface::pcmRead(u_char* ap_data, size_t av_count)
 	if (lv_count != ov_chunkSize) {
 		lv_count = ov_chunkSize;
 	}
-
 	while (lv_count > 0) {
 		lv_readBytesCount = snd_pcm_readi(op_handle, ap_data, lv_count);
 		if (lv_readBytesCount == -EAGAIN || (lv_readBytesCount >= 0 && (size_t)lv_readBytesCount < lv_count)) {
@@ -178,5 +176,43 @@ size_t MicInterface::pcmRead(u_char* ap_data, size_t av_count)
 		}
 	}
 	return lv_count;
+}
+int MicInterface::getSamples()
+{
+	pcmRead(op_audioBuffer,ov_chunkBytes);
+	pcmRead(op_audioBuffer + ov_chunkBytes, ov_chunkBytes);
+	return MICINT_OK;
+}
+u_char* MicInterface::getAudioBuffer()
+{
+	return op_audioBuffer;
+}
+int MicInterface::getAudioBuffSize()
+{
+	return ov_chunkSize * 2;
+}
+void MicSimInterface::run(){
+	FILE*   lp_file;
+	int     lv_size, lv_count;
+	lp_file = fopen ( ov_fileName.c_str() , "rb" );
+	fseek (lp_file , 0 , SEEK_END);
+	lv_size = ftell (lp_file);
+	rewind (lp_file);
+	lv_count = 0;
+	while (lv_count < lv_size){
+		fread (getAudioBuffer(),2, getAudioBuffSize(),lp_file); 
+		lv_count += ov_chunkSize * 4;
+		usleep(1000000);
+		pthread_cond_signal(&ov_dataReadyCond);
+	}
+}
+int MicSimInterface::init(std::string av_fileName){
+	ov_chunkSize 	= 4000;
+	ov_fileName 	= av_fileName;
+	op_audioBuffer  = (u_char*)malloc(ov_chunkSize * 4);
+	start();
+}
+int MicSimInterface::getSamples(){
+	pthread_cond_wait( &ov_dataReadyCond,&ov_dataReadyMutex);
 }
 #endif
