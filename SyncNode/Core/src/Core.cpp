@@ -14,16 +14,16 @@ class MediaThread : public Thread{
 private:
 	std::string ov_fileName;
 	MicInterface ov_micInterface;
-	CrossCorrelation ov_crossCorrelation;
+	CrossCorrelation* op_crossCorrelation;
 protected:
 	virtual void run(){
-		ov_crossCorrelation(ov_fileName);
-		ov_crossCorrelation.init();
+		op_crossCorrelation = new CrossCorrelation(ov_fileName);
+		op_crossCorrelation->init();
 		ov_micInterface.init();
 		pthread_cond_wait(&sov_launchSynchroCond, &sov_launchSynchroMutex);
 		while(1){
 			ov_micInterface.getSamples();
-			ov_crossCorrelation.process();
+			op_crossCorrelation->process();
 		}
 	}
 public:
@@ -32,7 +32,7 @@ public:
 		return 0;
 	}
 	int getTimeStamp(long &av_timeStamp){
-		return CrossCorrelation.getTimeStamp(av_timeStamp);
+		return op_crossCorrelation->getTimeStamp(av_timeStamp);
 	}
 };
 
@@ -43,6 +43,7 @@ int main(int argc, char* argv[]){
 	std::string 				lv_readString;
 	bool 						lv_isDeviceRegistered;
 	enum State 					lv_state;
+    int                         lv_request;
 
     lv_state = SYNC_ENDED;
 	lv_isDeviceRegistered = verifyDevice();
@@ -50,7 +51,7 @@ int main(int argc, char* argv[]){
 	while(1){
 		lv_nodeJSInterface.listen();
 		lv_nodeJSInterface.read(lv_readString);
-		parseRequest(lv_readString,lv_reqParsing):
+		lv_request = parseRequest(lv_readString,lv_reqParsing);
 		if(!lv_isDeviceRegistered){
             lv_nodeJSInterface.write("ERROR_DEVICE_NOT_REGISTERED");
             LOG_ERROR << "Device is not registered";
@@ -58,12 +59,12 @@ int main(int argc, char* argv[]){
         else{
             switch(lv_state){
                 case SYNC_ENDED:
-                	switch(lv_reqParsing[0]){
+                	switch(lv_request){
                 		LOG_INFO << "Current state: SYNC_ENDED  Current event: "<<lv_reqParsing[0];
-                		case "LOAD_FILE":
+                		case LOAD_FILE:
                 			LOG_INFO << "File name : " << lv_reqParsing[1];
                 			if(isFileExist(lv_reqParsing[1])){
-                				MediaThread.setFileName(lv_reqParsing[1]);
+                				lv_mediaThread.setFileName(lv_reqParsing[1]);
                 				lv_nodeJSInterface.write("OK FILE_FOUND_AND_LOADED");
                 				//returnValue=pthread_create( &synchronizationThread, NULL, synchronizationThreadHandle, (void*) (buffer+10));
                 				//if(returnValue){
@@ -85,14 +86,14 @@ int main(int argc, char* argv[]){
                 	}
                 break;
 				case FILE_CHOSEN:
-                    switch(lv_reqParsing[0]){
+                    switch(lv_request){
                     	LOG_INFO << "Current state: FILE_CHOSEN  Current event: "<<lv_reqParsing[0];
-                		case "LOAD_FILE":
+                		case LOAD_FILE:
                 			LOG_INFO << "File name : " << lv_reqParsing[1];
                 			if(isFileExist(lv_reqParsing[1])){
                 				//pthread_cancel(synchronizationThread);
                             	//logProcess("MAIN THREAD  - LOG WARN - main: ynchronization thread is killed");
-                				MediaThread.setFileName(lv_reqParsing[1]);
+                				lv_mediaThread.setFileName(lv_reqParsing[1]);
                 				lv_nodeJSInterface.write("OK FILE_FOUND_AND_LOADED");
                 				//returnValue=pthread_create( &synchronizationThread, NULL, synchronizationThreadHandle, (void*) (buffer+10));
                 				//if(returnValue){
@@ -107,13 +108,13 @@ int main(int argc, char* argv[]){
                 				LOG_ERROR << "File : "<<lv_reqParsing[1]<< " isn't found";
                 			}
                 		break;
-                		case "PLAY_FILE":
+                		case PLAY_FILE:
                 			lv_nodeJSInterface.write("OK SYNCHRONIZATION_LAUNCHED");
                         	pthread_cond_signal(&sov_launchSynchroCond);
                         	LOG_INFO << "Starting synchronization ...";
-                        	state = SYNC_STARTED;
+                        	lv_state = SYNC_STARTED;
                 		break;
-                		case "GET_TIMST":
+                		case GET_TIMST:
                 			lv_nodeJSInterface.write("OK 0");
                 			LOG_INFO << "Handling timestamp request TS = 0";
                 		break;
@@ -123,12 +124,12 @@ int main(int argc, char* argv[]){
                 break;
                 case SYNC_STARTED:
                 	LOG_INFO << "Current state: SYNC_STARTED";
-                	switch(lv_reqParsing[0]){
-                		case "LOAD_FILE":
+                	switch(lv_request){
+                		case LOAD_FILE:
                 		break;
-                		case "PLAY_FILE":
+                		case PLAY_FILE:
                 		break;
-                		case "GET_TIMST":
+                		case GET_TIMST:
                 		break;
                 		default:
                 		break;

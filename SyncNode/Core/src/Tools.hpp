@@ -17,6 +17,7 @@
 #define LOG_DEBUG4 	FILE_LOG(logDEBUG4)	<< "("<<__FILE__  << ":"<<__LINE__<<") - "
 
 enum State      {SYNC_ENDED,FILE_CHOSEN,SYNC_STARTED};
+enum ReqType    {LOAD_FILE,PLAY_FILE,GET_TIMST,EXIT_PROG};
 
 static void  getMacAddress(std::string &av_macAddr){
     FILE* 	lp_cmd;
@@ -45,11 +46,19 @@ static int isFileExist (const std::string &av_fileName) {
   return (stat (av_fileName.c_str(), &lp_buffer) == 0);
 }
 
-static void parseRequest(std::string av_request, std::vector<std::string> &av_results){
+static int parseRequest(std::string av_request, std::vector<std::string> &av_results){
     std::string lv_buffer;
     std::stringstream lv_stringStream (av_request);
 
     while (lv_stringStream >> lv_buffer)
         av_results.push_back(lv_buffer);
+
+    if(av_results[0].compare("LOAD_FILE")==0)
+        return LOAD_FILE;
+    else if(av_results[0].compare("PLAY_FILE")==0)
+        return PLAY_FILE;
+    else if(av_results[0].compare("GET_TIMST")==0)
+        return GET_TIMST;
+    return -1;
 }
 #endif
