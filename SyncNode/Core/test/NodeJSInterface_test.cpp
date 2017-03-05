@@ -39,7 +39,7 @@ TEST_F(NodeJSInterfaceTest,NodeJSInterfaceTest_socket){
 TEST_F(NodeJSInterfaceTest,NodeJSInterfaceTest_echo){
 	std::string lv_write;
 	int lv_childPid;
-	usleep(10000);
+	usleep(1000000);
 	NodeJSInterface nodeJSInterface;
 	lv_childPid = fork();
 

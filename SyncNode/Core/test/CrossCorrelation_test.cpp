@@ -39,7 +39,7 @@ TEST_F(CrossCorrelationTest,XCorrElem_VerifyingMemoryAllocation){
   for(i=0;i<5;i++)
     EXPECT_EQ(0,std::memcmp((*lp_refSignals)[i], &lp_speechOneMinuteCopy[lv_begin+i*SAMPLING_RATE], SAMPLING_RATE * sizeof(short)));
   fclose(lp_file);
-  //delete[] lp_speechOneMinuteCopy;
+  delete[] lp_speechOneMinuteCopy;
 }
 
 TEST_F(CrossCorrelationTest,XCorrElem_VerifyingEnergy2Calculation){
