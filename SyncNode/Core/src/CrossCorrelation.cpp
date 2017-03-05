@@ -32,7 +32,9 @@ int CrossCorrelation::init(){
 	op_capturedSig 			= new short[SAMPLING_RATE << 1];
 	op_capturedSignalNrg2 	= new long[SAMPLING_RATE];
 	op_refFile				= new short[lv_size >> 1];
+	#ifdef __arm__
 	sov_cpuOfTheMainThread	= sched_getcpu();
+	#endif
 
 	//LOG_INFO<<"SAMPLING_RATE << 1 = "<<(SAMPLING_RATE << 1);
 	//LOG_INFO<<"SAMPLING_RATE = "<<SAMPLING_RATE ;
@@ -106,12 +108,14 @@ bool XCorrThread::getTimeStamp(long &av_timeStamp){
 }
 
 void XCorrThread::run(){
+	#ifdef __arm__
 	cpu_set_t cpuset;
 	sov_cpuOfTheMainThread = (sov_cpuOfTheMainThread+1)%4;
 	CPU_ZERO(&cpuset);
 	CPU_SET( sov_cpuOfTheMainThread , &cpuset);
 	sched_setaffinity(0, sizeof(cpuset), &cpuset);
 	std::cout << "Thread #" << "  : on CPU " << sched_getcpu() << std::endl;
+	#endif
 	while(1){
 		ov_isThreadReady = true;
 		pthread_cond_wait( &sop_capturedSigCond[ov_threadNum-1],&sop_capturedSigMutex[ov_threadNum-1]);

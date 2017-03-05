@@ -1,6 +1,8 @@
 #ifndef __MICROPHONEINTERFACE_HPP__
 #define __MICROPHONEINTERFACE_HPP__
+#ifdef __arm__
 #include <alsa/asoundlib.h>
+#endif
 #include <iostream>
 
 #include "Configuration.hpp"
@@ -9,17 +11,14 @@
 
 enum MicIntEnum 		{MICINT_OK, MICINT_ERROR};
 
-#ifdef __arm__
 struct HardParams{
 	snd_pcm_format_t 	ov_format;
 	unsigned int 		ov_channels;
 	unsigned int 		ov_rate;
 } ;
-#endif
 
 class MicInterface{
 private:
-	#ifdef __arm__
 	snd_pcm_t* 			op_handle;
 	struct HardParams 	ov_hardParams;
 	unsigned 			ov_bufferTime; // in micro seconds
@@ -34,7 +33,6 @@ private:
 	
 	int 				setParams();
 	size_t 				pcmRead(u_char* ap_data, size_t av_rcount);
-	#endif
 
 protected:
 	snd_pcm_uframes_t 	ov_chunkSize;
@@ -50,7 +48,6 @@ public:
 
 	virtual~ MicInterface(){}
 
-	#ifdef __arm__
 	MicInterface():
 		ov_bufferTime(0),
 		ov_periodTime(0),
@@ -60,7 +57,6 @@ public:
 		ov_bufferSize(0),
 		op_audioBuffer(nullptr),
 		ov_stream(SND_PCM_STREAM_CAPTURE){}
-	#endif
 };
 
 class MicSimInterface : public MicInterface, public Thread{

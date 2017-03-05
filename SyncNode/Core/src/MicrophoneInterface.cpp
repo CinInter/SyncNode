@@ -1,7 +1,6 @@
 #include "MicrophoneInterface.hpp"
 
 int MicInterface::init(){
-	#ifdef __arm__
 	int lv_retValue;
 	char* lp_pcmName = (char*)PCM_NAME;
 	snd_pcm_info_t* lp_info;
@@ -26,11 +25,10 @@ int MicInterface::init(){
     ov_hardParams.ov_channels 	= CHANNELS_NUM;
 
     setParams();
-	#endif
 	return MICINT_OK;
 }
 
-#ifdef __arm__
+
 int MicInterface::setParams(){
 	int lv_retValue, lv_rate;
 	snd_pcm_hw_params_t* lp_hardwareParams;
@@ -146,7 +144,6 @@ int MicInterface::setParams(){
 	}
 
 	ov_bufferFrames = ov_bufferSize;
-
 	return MICINT_OK;
 }
 
@@ -154,7 +151,6 @@ size_t MicInterface::pcmRead(u_char* ap_data, size_t av_count)
 {
 	size_t lv_readBytesCount;
 	size_t lv_count = av_count;
-
 	if (lv_count != ov_chunkSize) {
 		lv_count = ov_chunkSize;
 	}
@@ -215,4 +211,3 @@ int MicSimInterface::init(std::string av_fileName){
 int MicSimInterface::getSamples(){
 	pthread_cond_wait( &ov_dataReadyCond,&ov_dataReadyMutex);
 }
-#endif

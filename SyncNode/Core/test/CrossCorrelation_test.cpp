@@ -263,7 +263,9 @@ TEST_F(CrossCorrelationTest,CrossCorrelation){
   long value;
   short*  lp_speechFifteenMinutes = new short[SAMPLING_RATE * 60 * 15];
   short* test;
+  #ifdef __arm__
   std::cout << "Thread # main" << "  : on CPU " << sched_getcpu() << std::endl;
+  #endif
   CrossCorrelation xCorr("FifteenMinutesRandFile.raw");
   xCorr.init();
   xCorr.getCapturedSignalPointer(test);
