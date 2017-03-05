@@ -34,7 +34,6 @@ TEST_F(CrossCorrelationTest,XCorrElem_VerifyingMemoryAllocation){
   std::memcpy(lp_speechOneMinuteCopy,lp_speechOneMinute,SAMPLING_RATE * 60 * sizeof(short));
   delete[] lp_speechOneMinute;
   std::vector<short*>* lp_refSignals = lv_xCorrElem.getRefSignals();
-  fclose(lp_file);
 
   for(i=0;i<5;i++)
     EXPECT_EQ(0,std::memcmp((*lp_refSignals)[i], &lp_speechOneMinuteCopy[lv_begin+i*SAMPLING_RATE], SAMPLING_RATE * sizeof(short)));
