@@ -1,5 +1,6 @@
 #include "MicrophoneInterface.hpp"
 
+#ifdef __arm__
 int MicInterface::init(){
 	int lv_retValue;
 	char* lp_pcmName = (char*)PCM_NAME;
@@ -187,6 +188,8 @@ int MicInterface::getAudioBuffSize()
 {
 	return ov_chunkSize * 2;
 }
+#endif
+
 void MicSimInterface::run(){
 	FILE*   lp_file;
 	int     lv_size, lv_count;

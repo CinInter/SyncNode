@@ -13,7 +13,11 @@ static pthread_mutex_t sov_launchSynchroMutex	= PTHREAD_MUTEX_INITIALIZER;
 class MediaThread : public Thread{
 private:
 	std::string ov_fileName;
+    #ifdef __arm__
 	MicInterface ov_micInterface;
+    #else
+    MicSimInterface ov_micInterface;
+    #endif
 	CrossCorrelation* op_crossCorrelation;
 protected:
 	virtual void run(){

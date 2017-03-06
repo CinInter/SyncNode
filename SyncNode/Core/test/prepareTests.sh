@@ -22,7 +22,7 @@ if [ "$OSTYPE" == "linux-gnueabihf" ] ; then
 			../src/NodeJSInterface.hpp		\
 			../src/Tools.hpp 				\
 			../src/Thread.hpp				\
-			-I../src -DCORETEST -I../include/gtestRpi -std=c++14 -O3 -mfpu=neon
+			-I../src -DCORETEST -I../include/gtestRpi -std=c++14 -O3 -mfpu=neon-fp-armv8 -mcpu=cortex-a53
 	g++ -o test *.o -L../lib/gtestRpi -lgtest -lgtest_main -lpthread -lasound
 	rm *.o ../src/*.gch
 	echo "Compilation is done successfully"

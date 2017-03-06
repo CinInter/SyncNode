@@ -11,13 +11,16 @@
 
 enum MicIntEnum 		{MICINT_OK, MICINT_ERROR};
 
+#ifdef __arm__
 struct HardParams{
 	snd_pcm_format_t 	ov_format;
 	unsigned int 		ov_channels;
 	unsigned int 		ov_rate;
 } ;
+#endif
 
 class MicInterface{
+#ifdef __arm__
 private:
 	snd_pcm_t* 			op_handle;
 	struct HardParams 	ov_hardParams;
@@ -57,6 +60,7 @@ public:
 		ov_bufferSize(0),
 		op_audioBuffer(nullptr),
 		ov_stream(SND_PCM_STREAM_CAPTURE){}
+#endif
 };
 
 class MicSimInterface : public MicInterface, public Thread{
