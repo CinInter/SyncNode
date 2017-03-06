@@ -23,7 +23,11 @@ protected:
 	virtual void run(){
 		op_crossCorrelation = new CrossCorrelation(ov_fileName);
 		op_crossCorrelation->init();
+        #ifndef __arm__
 		ov_micInterface.init("lol");
+        #else
+        ov_micInterface.init();
+        #endif
 		pthread_cond_wait(&sov_launchSynchroCond, &sov_launchSynchroMutex);
 		while(1){
 			ov_micInterface.getSamples();
