@@ -63,7 +63,6 @@ public:
 		ov_stream(SND_PCM_STREAM_CAPTURE){}
 #endif
 };
-#ifndef __arm__
 class MicSimInterface : public MicInterface, public Thread{
 private:
 	std::string 		ov_fileName;
@@ -78,5 +77,4 @@ public:
 	virtual u_char* 	getAudioBuffer();
 	virtual int 		getAudioBuffSize();
 };
-#endif
 #endif

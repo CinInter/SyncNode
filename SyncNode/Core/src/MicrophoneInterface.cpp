@@ -190,7 +190,6 @@ int MicInterface::getAudioBuffSize()
 }
 #endif
 
-#ifndef __arm__
 void MicSimInterface::run(){
 	FILE*   lp_file;
 	int     lv_size, lv_count;
@@ -225,4 +224,3 @@ int MicSimInterface::getAudioBuffSize()
 {
 	return ov_chunkSize * 2;
 }
-#endif
