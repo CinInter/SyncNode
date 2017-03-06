@@ -7,8 +7,8 @@ var callbackFunction;
 
 
 function resetCProcess(socketNum,callback) {
-	var ps    = spawn('ps');
-	var	grep  = spawn('grep', ["./CProcess"]);
+	var ps    = spawn('ps',["-e"]);
+	var	grep  = spawn('grep', ["CProcess"]);
 	sockNum   = socketNum;
 
 	callbackFunction=function(){
@@ -20,7 +20,7 @@ function resetCProcess(socketNum,callback) {
 
 	ps.on('exit', function (code) {
 		if (code !== 0) {
-			util.log('NODE PROCESS - LOG INFO - resetCProcess : ps process exited with code ' + code);
+			console.log('NODE PROCESS - LOG INFO - resetCProcess : ps process exited with code ' + code);
 		}
 		grep.stdin.end();
 	});
@@ -40,9 +40,9 @@ function resetCProcess(socketNum,callback) {
 		responseArrayLines = dataString.split("\n");
 		for(var responseArrayLine = 0; responseArrayLine < responseArrayLines.length-1; responseArrayLine++) {
 			responseArray = responseArrayLines[responseArrayLine].trimLeft().split(" ");
-			util.log("NODE PROCESS - LOG INFO - resetCProcess : Process num "+responseArrayLine+" id : "+responseArray[0]+" type of executable : "+responseArray[6]);
+			console.log("NODE PROCESS - LOG INFO - resetCProcess : Process num "+responseArrayLine+" id : "+responseArray[0]+" type of executable : "+responseArray[6]);
 			if(responseArray[6]=="grep"){
-				util.log("NODE PROCESS - LOG INFO - resetCProcess : Killing grep process with id : "+responseArray[0]);
+				console.log("NODE PROCESS - LOG INFO - resetCProcess : Killing grep process with id : "+responseArray[0]);
 				var	kill  = spawn('kill', ['-9',responseArray[0]]);
 			}else{
 				isCProcessExists=1;
@@ -66,23 +66,23 @@ function resetCProcess(socketNum,callback) {
 }
 
 function killProcess(processId,callback) {
-	util.log("NODE PROCESS - LOG INFO - killProcess   : Killing ./CProcess with id : "+processId);
+	console.log("NODE PROCESS - LOG INFO - killProcess   : Killing ./CProcess with id : "+processId);
 	var	kill  = spawn('kill', ['-9',processId]);
 
 	kill.on('exit', function (code) {
 		if (code !== 0) {
-			util.log('NODE PROCESS - LOG INFO - resetCProcess : Kill process exited with code ' + code);
+			console.log('NODE PROCESS - LOG INFO - resetCProcess : Kill process exited with code ' + code);
 			launchProcess(sockNum,callback);
 		}
 		else{
-			util.log('NODE PROCESS - LOG INFO - resetCProcess : Killing of ./CProcess is finished');
+			console.log('NODE PROCESS - LOG INFO - resetCProcess : Killing of ./CProcess is finished');
 			launchProcess(sockNum,callback);
 		}
 	});
 }
 
 function launchProcess(socketNum,callback){
-	util.log("NODE PROCESS - LOG INFO - launchProcess : launch CProcess with socketNum = "+socketNum);
+	console.log("NODE PROCESS - LOG INFO - launchProcess : launch CProcess with socketNum = "+socketNum);
 	var	CProcess  = spawn('./CProcess', [socketNum]);
 	CProcess.stdout.pipe(process.stdout);
 	showProcesses(callback);
@@ -96,6 +96,9 @@ function showProcesses(callback) {
 		callbackFunction();
 	});
 }
+
 module.exports={
-	resetCProcess
+	resetCProcess:function(socketNum,callback){
+		resetCProcess(socketNum,callback);
+	}
 };

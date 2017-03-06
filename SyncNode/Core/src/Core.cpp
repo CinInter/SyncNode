@@ -48,11 +48,14 @@ int main(int argc, char* argv[]){
     lv_state = SYNC_ENDED;
 	lv_isDeviceRegistered = verifyDevice();
 
+    FILELog::ReportingLevel() = FILELog::FromString("DEBUG4");
+    FILE* log_fd = fopen( "CProcess_logfile.txt", "w" );
+    Output2FILE::Stream() = log_fd;
 	while(1){
 		lv_nodeJSInterface.listen();
 		lv_nodeJSInterface.read(lv_readString);
 		lv_request = parseRequest(lv_readString,lv_reqParsing);
-		if(!lv_isDeviceRegistered){
+		if(0/*!lv_isDeviceRegistered*/){
             lv_nodeJSInterface.write("ERROR_DEVICE_NOT_REGISTERED");
             LOG_ERROR << "Device is not registered";
         }
@@ -62,6 +65,7 @@ int main(int argc, char* argv[]){
                 	switch(lv_request){
                 		LOG_INFO << "Current state: SYNC_ENDED  Current event: "<<lv_reqParsing[0];
                 		case LOAD_FILE:
+                            LOG_INFO << "Current state: SYNC_ENDED  Current event: "<<lv_reqParsing[0];
                 			LOG_INFO << "File name : " << lv_reqParsing[1];
                 			if(isFileExist(lv_reqParsing[1])){
                 				lv_mediaThread.setFileName(lv_reqParsing[1]);
@@ -80,6 +84,7 @@ int main(int argc, char* argv[]){
                 			}
                 		break;
                 		default:
+                            LOG_INFO << "Current state: SYNC_ENDED  Current event: "<<lv_reqParsing[0];
                 			lv_nodeJSInterface.write("ERROR FILE_NOT_CHOSEN_YET");
                 			LOG_ERROR << "File isn't chosen yet";
                 		break;
@@ -87,8 +92,8 @@ int main(int argc, char* argv[]){
                 break;
 				case FILE_CHOSEN:
                     switch(lv_request){
-                    	LOG_INFO << "Current state: FILE_CHOSEN  Current event: "<<lv_reqParsing[0];
                 		case LOAD_FILE:
+                            LOG_INFO << "Current state: FILE_CHOSEN  Current event: "<<lv_reqParsing[0];
                 			LOG_INFO << "File name : " << lv_reqParsing[1];
                 			if(isFileExist(lv_reqParsing[1])){
                 				//pthread_cancel(synchronizationThread);

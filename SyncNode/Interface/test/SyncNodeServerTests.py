@@ -25,16 +25,15 @@ class TestStringMethods(unittest.TestCase):
     def test_S_SYNC_ENDED_R_LOAD_FILE(self):
     	sucess=1
         res=unirest.post(SERVER_URL+'loadFile', headers={"Accept": "application/json"}, params={"parameter":'{"command": "LOAD_FILE testAudioFile.pcm"}',"file": open("files/testAudioFile.pcm", mode="r")})
-        
-    	#res=unirest.post(SERVER_URL+'loadFile', headers={ "Content-Type": "application/json" }, params=json.dumps({"command": "LOAD_FILE testfile"}))
-    	#tmp_res = json.loads(res.raw_body)
-        #sucess=sucess&(tmp_res['success']==True)
-        #sucess=sucess&(tmp_res['data']=="FILE_FOUND_AND_LOADED")
+        tmp_res = json.loads(res.raw_body)
+        sucess=sucess&(tmp_res['success']==True)
+        sucess=sucess&(tmp_res['data']=="FILE_FOUND_AND_LOADED")
         #res=unirest.get(SERVER_URL+'killProcess', headers={}, params={})
+        res=unirest.post(SERVER_URL+'loadFile', headers={"Accept": "application/json"}, params={"parameter":'{"command": "LOAD_FILE testAudioFil.pcm"}',"file": open("files/testAudioFile.pcm", mode="r")})
         #res=unirest.post(SERVER_URL+'loadFile', headers={ "Content-Type": "application/json" }, params=json.dumps({"command": "LOAD_FILE testfil"}))
-        #tmp_res = json.loads(res.raw_body)
-        #sucess=sucess&(tmp_res['success']==False)
-        #sucess=sucess&(tmp_res['data']=="FILE_NOT_FOUND")
+        tmp_res = json.loads(res.raw_body)
+        sucess=sucess&(tmp_res['success']==False)
+        sucess=sucess&(tmp_res['data']=="FILE_NOT_FOUND")
         #res=unirest.get(SERVER_URL+'killProcess', headers={}, params={})
         self.assertEqual(sucess, 1)
 

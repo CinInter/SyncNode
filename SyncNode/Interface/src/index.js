@@ -1,14 +1,12 @@
 var net 				= require('net');
-var bodyParser  		= require('body-parser');
-var express     		= require('express');
-//Begin - Code for upload
-var formidable 			= require('formidable');
+var bodyParser  		= require('../node_modules/body-parser/index.js');
+var express     		= require('../node_modules/express/index.js');
+var formidable 			= require('../node_modules/formidable/index.js');
 var path 				= require('path');
 var fs 					= require('fs');
-//End	- Code for upload
 var util  				= require('util');
 var ProcessManagement 	= require('./ProcessManagement.js');
-var cProcessSocket		= 51710;
+var cProcessSocket		= 51712;
 
 var app = express();
 app.set('port', (process.env.PORT || 5000));
