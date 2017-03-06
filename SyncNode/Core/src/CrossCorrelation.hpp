@@ -51,7 +51,7 @@ public:
 		delete[] op_refFile;
 		delete[] op_capturedSignalNrg2;
 	}
-	CrossCorrelation(const std::string &av_fileName):
+	CrossCorrelation(std::string av_fileName):
 		ov_fileName(av_fileName),
 		ov_xCorrState(THREAD_INIT),
 		ov_isTheFirstCapturedSec(true){}

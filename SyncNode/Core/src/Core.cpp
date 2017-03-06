@@ -23,7 +23,7 @@ protected:
 	virtual void run(){
 		op_crossCorrelation = new CrossCorrelation(ov_fileName);
 		op_crossCorrelation->init();
-		ov_micInterface.init();
+		ov_micInterface.init("lol");
 		pthread_cond_wait(&sov_launchSynchroCond, &sov_launchSynchroMutex);
 		while(1){
 			ov_micInterface.getSamples();

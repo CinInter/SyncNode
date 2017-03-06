@@ -190,6 +190,7 @@ int MicInterface::getAudioBuffSize()
 }
 #endif
 
+#ifndef __arm__
 void MicSimInterface::run(){
 	FILE*   lp_file;
 	int     lv_size, lv_count;
@@ -210,7 +211,18 @@ int MicSimInterface::init(std::string av_fileName){
 	ov_fileName 	= av_fileName;
 	op_audioBuffer  = (u_char*)malloc(ov_chunkSize * 4);
 	start();
+	return 0;
 }
 int MicSimInterface::getSamples(){
 	pthread_cond_wait( &ov_dataReadyCond,&ov_dataReadyMutex);
+	return 0;
 }
+u_char* MicSimInterface::getAudioBuffer()
+{
+	return op_audioBuffer;
+}
+int MicSimInterface::getAudioBuffSize()
+{
+	return ov_chunkSize * 2;
+}
+#endif

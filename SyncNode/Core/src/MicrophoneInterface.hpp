@@ -4,6 +4,7 @@
 #include <alsa/asoundlib.h>
 #endif
 #include <iostream>
+#include <unistd.h>
 
 #include "Configuration.hpp"
 #include "Tools.hpp"
@@ -46,8 +47,8 @@ public:
 	bool 				isMicReady();
 	virtual int 		getSamples();
 	int					destroy();
-	u_char* 			getAudioBuffer();
-	int 				getAudioBuffSize();
+	virtual u_char* 	getAudioBuffer();
+	virtual int 		getAudioBuffSize();
 
 	virtual~ MicInterface(){}
 
@@ -62,15 +63,20 @@ public:
 		ov_stream(SND_PCM_STREAM_CAPTURE){}
 #endif
 };
-
+#ifndef __arm__
 class MicSimInterface : public MicInterface, public Thread{
 private:
 	std::string 		ov_fileName;
 	pthread_cond_t  	ov_dataReadyCond 		= PTHREAD_COND_INITIALIZER;
 	pthread_mutex_t 	ov_dataReadyMutex		= PTHREAD_MUTEX_INITIALIZER;
+	int 				ov_chunkSize;
+	u_char*				op_audioBuffer;
 	virtual void 		run();
 public:
 	virtual int 		init(std::string av_fileName);
 	virtual int 		getSamples();
+	virtual u_char* 	getAudioBuffer();
+	virtual int 		getAudioBuffSize();
 };
+#endif
 #endif
