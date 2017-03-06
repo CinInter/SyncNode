@@ -58,6 +58,7 @@ int main(int argc, char* argv[]){
 	while(1){
 		lv_nodeJSInterface.listen();
 		lv_nodeJSInterface.read(lv_readString);
+        lv_reqParsing.clear();
 		lv_request = parseRequest(lv_readString,lv_reqParsing);
 		if(!lv_isDeviceRegistered){
             lv_nodeJSInterface.write("ERROR_DEVICE_NOT_REGISTERED");
@@ -135,10 +136,31 @@ int main(int argc, char* argv[]){
                 	LOG_INFO << "Current state: SYNC_STARTED";
                 	switch(lv_request){
                 		case LOAD_FILE:
+                            LOG_INFO << "Current state: SYNC_ENDED  Current event: "<<lv_reqParsing[0];
+                            LOG_INFO << "File name : " << lv_reqParsing[1];
+                            if(isFileExist(lv_reqParsing[1])){
+                                lv_mediaThread.setFileName(lv_reqParsing[1]);
+                                lv_nodeJSInterface.write("OK FILE_FOUND_AND_LOADED");
+                                //returnValue=pthread_create( &synchronizationThread, NULL, synchronizationThreadHandle, (void*) (buffer+10));
+                                //if(returnValue){
+                                    //logProcessP("MAIN THREAD  - LOG ERROR - main: pthread_create() return code: ",returnValue);
+                                    //exit(EXIT_FAILURE);
+                                //}
+                                LOG_INFO << "File : "<<lv_reqParsing[1]<< " is found and loaded";
+                                lv_state = FILE_CHOSEN;
+                            }
+                            else{
+                                lv_nodeJSInterface.write("ERROR FILE_NOT_FOUND");
+                                LOG_ERROR << "File : "<<lv_reqParsing[1]<< " isn't found";
+                            }
                 		break;
                 		case PLAY_FILE:
+                            lv_nodeJSInterface.write("ERROR THIS_REQUEST_CANNOT_BE_HANDLED_AS_FILE_IS_PLAYING");
+                            LOG_ERROR << "MAIN THREAD  - LOG ERROR - main: Request not handled because the file is being play";
                 		break;
                 		case GET_TIMST:
+                            //lv_mediaThread.getTimeStamp();
+                            lv_nodeJSInterface.write("OK 2134245332");
                 		break;
                 		default:
                 		break;
