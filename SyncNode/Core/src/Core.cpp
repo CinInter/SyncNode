@@ -55,7 +55,7 @@ int main(int argc, char* argv[]){
 		lv_nodeJSInterface.listen();
 		lv_nodeJSInterface.read(lv_readString);
 		lv_request = parseRequest(lv_readString,lv_reqParsing);
-		if(0/*!lv_isDeviceRegistered*/){
+		if(!lv_isDeviceRegistered){
             lv_nodeJSInterface.write("ERROR_DEVICE_NOT_REGISTERED");
             LOG_ERROR << "Device is not registered";
         }
