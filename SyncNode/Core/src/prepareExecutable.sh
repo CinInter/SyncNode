@@ -25,20 +25,20 @@ if [ "$OSTYPE" == "linux-gnueabihf" ] ; then
 	echo "Compilation is done successfully"
 
 elif [ "$OSTYPE" == "darwin16" ];then
-	g++ -c 	CrossCorrelation_test.cpp		\
-			Main_TestAll.cpp 				\
-			NodeJSInterface_test.cpp 		\
-			../src/CrossCorrelation.cpp 	\
-			../src/NodeJSInterface.cpp		\
-			../src/Thread.cpp				\
-			../src/Configuration.hpp 		\
-			../src/CrossCorrelation.hpp 	\
-			../src/Log.hpp 					\
-			../src/NodeJSInterface.hpp		\
-			../src/Tools.hpp 				\
-			../src/Thread.hpp				\
-	-I../src -DCORETEST -I../include/gtestMac -std=c++14 -O3
-	g++ -o test *.o -L../lib/gtestMac -lgtest -lgtest_main -lpthread 
+	g++ -c 	CrossCorrelation.cpp 	\
+			MicrophoneInterface.cpp	\
+			NodeJSInterface.cpp		\
+			Thread.cpp				\
+			Core.cpp				\
+			Configuration.hpp 		\
+			CrossCorrelation.hpp 	\
+			Log.hpp 				\
+			MicrophoneInterface.hpp	\
+			NodeJSInterface.hpp		\
+			Tools.hpp 				\
+			Thread.hpp				\
+			-I. -std=c++14 -O3
+	g++ -o CProcess *.o -lpthread 
 	rm *.o ../src/*.gch
 	echo "Compilation is done successfully"
 else
