@@ -23,7 +23,7 @@ static void  getMacAddress(std::string &av_macAddr){
     FILE* 	lp_cmd;
     char 	lp_tmpBuff[25];
     #ifdef __arm__
-    lp_cmd = popen("/sbin/ifconfig | grep ether -m1 | cut -d' ' -f 11", "r");
+    lp_cmd = popen("/sbin/ifconfig | grep eth0 -m1 | cut -d' ' -f 11", "r");
     #else
     lp_cmd = popen("/sbin/ifconfig | grep ether -m1 | cut -d' ' -f 2", "r");
     #endif
