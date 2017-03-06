@@ -1,8 +1,8 @@
 import unittest
 import json
 import unirest
+import time
 import os
-#os.system("some_command &")
 
 SERVER_URL="http://127.0.0.1:5000/"
 
@@ -32,6 +32,7 @@ class TestStringMethods(unittest.TestCase):
         tmp_res = json.loads(res.raw_body)
         sucess=sucess&(tmp_res['success']==False)
         sucess=sucess&(tmp_res['data']=="FILE_NOT_FOUND")
+        time.sleep(0.2)
         self.assertEqual(sucess, 1)
 
     # State : FILE_CHOSEN
@@ -48,6 +49,7 @@ class TestStringMethods(unittest.TestCase):
         tmp_res = json.loads(res.raw_body)
         sucess=sucess&(tmp_res['success']==False)
         sucess=sucess&(tmp_res['data']=="FILE_NOT_FOUND")
+        time.sleep(0.2)
         self.assertEqual(sucess, 1)
 
     def test_S_FILE_CHOSEN_R_PLAY_FILE(self):
@@ -57,6 +59,7 @@ class TestStringMethods(unittest.TestCase):
         tmp_res = json.loads(res.raw_body)
         sucess=sucess&(tmp_res['success']==True)
         sucess=sucess&(tmp_res['data']=="SYNCHRONIZATION_LAUNCHED")
+        time.sleep(0.2)
         self.assertEqual(sucess, 1)
 
     def test_S_FILE_CHOSEN_R_GET_TIMST(self):
@@ -65,6 +68,7 @@ class TestStringMethods(unittest.TestCase):
         res=unirest.get(SERVER_URL+'getTimeStamp', headers={}, params={})
         tmp_res = json.loads(res.raw_body)
         sucess=sucess&(tmp_res['success']==True)
+        time.sleep(0.2)
         self.assertEqual(sucess, 1)
 
     # State : SYNC_STARTED
@@ -77,6 +81,7 @@ class TestStringMethods(unittest.TestCase):
         tmp_res = json.loads(res.raw_body)
         sucess=sucess&(tmp_res['success']==True)
         sucess=sucess&(tmp_res['data']=="FILE_FOUND_AND_LOADED")
+        time.sleep(0.2)
         self.assertEqual(sucess, 1)
 
     def test_S_SYNC_STARTED_R_PLAY_FILE(self):
@@ -87,6 +92,7 @@ class TestStringMethods(unittest.TestCase):
         tmp_res = json.loads(res.raw_body)
         sucess=sucess&(tmp_res['success']==False)
         sucess=sucess&(tmp_res['data']=="THIS_REQUEST_CANNOT_BE_HANDLED_AS_FILE_IS_PLAYING")
+        time.sleep(0.2)
         self.assertEqual(sucess, 1)
 
     def test_S_SYNC_STARTED_R_GET_TIMST(self):
@@ -96,6 +102,7 @@ class TestStringMethods(unittest.TestCase):
         res=unirest.get(SERVER_URL+'getTimeStamp', headers={}, params={})
         tmp_res = json.loads(res.raw_body)
         sucess=sucess&(tmp_res['success']==True)
+        time.sleep(0.2)
         self.assertEqual(sucess, 1)
 
 if __name__ == '__main__':
