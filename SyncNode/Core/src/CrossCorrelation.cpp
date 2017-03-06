@@ -60,15 +60,11 @@ int CrossCorrelation::init(){
 int CrossCorrelation::process(){
 	int i;
 	ov_unixTSOfLastSample = time(0);
-	LOG_INFO << "op_capturedSig = "<<op_capturedSig;
-	LOG_INFO << "op_capturedSig + SAMPLING_RATE = "<<op_capturedSig + SAMPLING_RATE;
 	if(ov_isTheFirstCapturedSec){
-		LOG_INFO << "ov_isTheFirstCapturedSec";
 		ov_isTheFirstCapturedSec = false;
 		memmove(op_capturedSig, op_capturedSig + SAMPLING_RATE, SAMPLING_RATE << 1);
 	}
 	else{
-		LOG_INFO << "op_capturedSig[0] = " <<op_capturedSig[0] << " op_capturedSig[1] = " <<op_capturedSig[1] ;
 		op_capturedSignalNrg2[0] = 0;
     	for(i = 0; i < SAMPLING_RATE; i++)
     		op_capturedSignalNrg2[0] += op_capturedSig[i] * op_capturedSig[i];
@@ -90,7 +86,6 @@ int CrossCorrelation::getTimeStamp(long &av_timeStamp){
 
 	for (auto it = ov_xcorrThreads.begin(); it != ov_xcorrThreads.end(); ++it)
 		if((*it).getTimeStamp(av_timeStamp)){
-			std::cout<<"hello timstamp"<<std::endl;
 			av_timeStamp += (time(0) - ov_unixTSOfLastSample);
 			return 1;
 		}
@@ -114,14 +109,12 @@ void XCorrThread::run(){
 	CPU_ZERO(&cpuset);
 	CPU_SET( sov_cpuOfTheMainThread , &cpuset);
 	sched_setaffinity(0, sizeof(cpuset), &cpuset);
-	std::cout << "Thread #" << "  : on CPU " << sched_getcpu() << std::endl;
 	#endif
 	while(1){
 		ov_isThreadReady = true;
 		pthread_cond_wait( &sop_capturedSigCond[ov_threadNum-1],&sop_capturedSigMutex[ov_threadNum-1]);
 		if(ov_threadNum < 3)
 			pthread_cond_signal(&sop_capturedSigCond[ov_threadNum]);
-		printf(" thread num : %d T1: %.2f ms\n",ov_threadNum, (double)(clock())/CLOCKS_PER_MSEC);
 		for (auto it = ov_xCorrElements.begin(); it != ov_xCorrElements.end(); ++it){
 			(*it).processCapturedSignal(op_capturedSig,op_capturedSignalNrg2);
 			if((*it).ov_validationLevel == NB_OF_SECONS_REQUIRED_FOR_VALIDATION){
@@ -129,7 +122,6 @@ void XCorrThread::run(){
 				ov_timeStamp = (*it).ov_estimatedTS;
 			}
 		}
-		printf("thread num : %d T2: %.2f ms\n",ov_threadNum, (double)(clock())/CLOCKS_PER_MSEC);
 		pthread_cond_signal(&sov_calcFinishedSigCond);
 	}
 }
@@ -144,7 +136,6 @@ int XCorrThread::addRefSignal(short* ap_refSignal,int av_signalLen, int av_initi
 	j=1;
 	for (auto it = ov_xCorrElements.begin(); it != ov_xCorrElements.end(); ++it){
 		for(i = 0 ; i < 5 ; i++){
-			//LOG_INFO<<"addRefSignal : begin = "<< (30 * j + i+av_initialTS/1000)  <<" end = "<<( (30 * j + i)+1+av_initialTS/1000);
 			(*it).addRefSignal(&ap_refSignal[SAMPLING_RATE * (30 * j + i)] , SAMPLING_RATE);
 		}
 		j+=2;
@@ -201,7 +192,6 @@ int XCorrElem::processCapturedSignal(short* ap_capturedSignal,long* ap_capturedS
 	if(lv_normalizedXCorrMax > IDENTIFICATION_THRESHOLD){
 		ov_estimatedTS = ov_firstSecTS + 1000 * (ov_validationLevel + 1) + (SAMPLING_RATE - ov_maxIndex) / 8;
 		ov_validationLevel++;
-		std::cout<<"ov_validationLevel = "<<ov_validationLevel<<std::endl;
 	}
 	else
 		ov_validationLevel = 0;
