@@ -92,9 +92,9 @@ int CrossCorrelation::getTimeStamp(long &av_timeStamp){
 		if((*it).getTimeStamp(av_timeStamp)){
 			std::cout<<"hello timstamp"<<std::endl;
 			av_timeStamp += (time(0) - ov_unixTSOfLastSample);
-			return 0;
+			return 1;
 		}
-	return -1;
+	return 0;
 }
 
 int CrossCorrelation::getCapturedSignalPointer(short* &ap_capturedSigPtr){
@@ -199,7 +199,7 @@ int XCorrElem::processCapturedSignal(short* ap_capturedSignal,long* ap_capturedS
 	}
 
 	if(lv_normalizedXCorrMax > IDENTIFICATION_THRESHOLD){
-		ov_estimatedTS = ov_firstSecTS + 1000 * ov_validationLevel + (SAMPLING_RATE - ov_maxIndex) / 8;
+		ov_estimatedTS = ov_firstSecTS + 1000 * (ov_validationLevel + 1) + (SAMPLING_RATE - ov_maxIndex) / 8;
 		ov_validationLevel++;
 		std::cout<<"ov_validationLevel = "<<ov_validationLevel<<std::endl;
 	}

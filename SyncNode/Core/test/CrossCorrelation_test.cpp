@@ -203,60 +203,34 @@ TEST_F(CrossCorrelationTest,XCorrThread_addRefSignalMemoryVerification){
   delete[] lp_capturedOneSecWithPast;
 }*/
 
-/*TEST_F(CrossCorrelationTest,CrossCorrelation){
+TEST_F(CrossCorrelationTest,CrossCorrelation){
   int     i,j,lv_size;
   FILE*   lp_file;
-  long value;
+  long    lv_timeStamp;
   short*  lp_speechFifteenMinutes = new short[SAMPLING_RATE * 60 * 15];
-  short* test;
+  short*  lp_inputPointer;
   bool    lv_timeStampReady;
   CrossCorrelation xCorr("FifteenMinutesRandFile.raw");
   xCorr.init();
-  xCorr.getCapturedSignalPointer(test);
+  xCorr.getCapturedSignalPointer(lp_inputPointer);
   
   lp_file = fopen("FifteenMinutesRandFile.raw","rb");
   fread(lp_speechFifteenMinutes,2 ,SAMPLING_RATE * 60 * 15, lp_file);
 
-  //for(j = 0; j < 5; j++){
-    std::memcpy(test, &lp_speechFifteenMinutes[(90+0)*8000], SAMPLING_RATE * sizeof(short));
+  for(j = 0; j < 6; j++){
+    std::memcpy(lp_inputPointer, &lp_speechFifteenMinutes[(90+j)*8000], SAMPLING_RATE * sizeof(short));
     xCorr.process();
-    lv_timeStampReady = xCorr.getTimeStamp(value);
-    std::cout<<"Time Stamp = "<<value<<std::endl;
-  //} 
-    std::memcpy(test, &lp_speechFifteenMinutes[(90+1)*8000], SAMPLING_RATE * sizeof(short));
-    xCorr.process();
-    lv_timeStampReady = xCorr.getTimeStamp(value);
-    std::cout<<"Time Stamp = "<<value<<std::endl;
+    lv_timeStampReady = xCorr.getTimeStamp(lv_timeStamp);
+  } 
 
-    std::memcpy(test, &lp_speechFifteenMinutes[(90+2)*8000], SAMPLING_RATE * sizeof(short));
-    xCorr.process();
-    lv_timeStampReady = xCorr.getTimeStamp(value);
-    std::cout<<"Time Stamp = "<<value<<std::endl;
-
-    std::memcpy(test, &lp_speechFifteenMinutes[(90+3)*8000], SAMPLING_RATE * sizeof(short));
-    xCorr.process();
-    lv_timeStampReady = xCorr.getTimeStamp(value);
-    std::cout<<"Time Stamp = "<<value<<std::endl;
-
-    std::memcpy(test, &lp_speechFifteenMinutes[(90+4)*8000], SAMPLING_RATE * sizeof(short));
-    xCorr.process();
-    lv_timeStampReady = xCorr.getTimeStamp(value);
-    std::cout<<"Time Stamp = "<<value<<std::endl;
-
-    std::memcpy(test, &lp_speechFifteenMinutes[(90+5)*8000], SAMPLING_RATE * sizeof(short));
-    xCorr.process();
-    lv_timeStampReady = xCorr.getTimeStamp(value);
-    std::cout<<"Time Stamp = "<<value<<std::endl;
-
-    EXPECT_EQ(lv_timeStampReady,true);
-  EXPECT_EQ((value<96002)&&(value>95999),true); 
-    std::cout<<"Time Stamp = "<<value<<std::endl;
+  EXPECT_EQ(lv_timeStampReady,true);
+  EXPECT_EQ((lv_timeStamp<96002)&&(lv_timeStamp>95999),true);
 
   fclose(lp_file);
 
   delete[] lp_speechFifteenMinutes;
-}*/
-TEST_F(CrossCorrelationTest,CrossCorrelation){
+}
+/*TEST_F(CrossCorrelationTest,CrossCorrelation){
   int     i,j,lv_size;
   FILE*   lp_file;
   long value;
@@ -287,4 +261,4 @@ TEST_F(CrossCorrelationTest,CrossCorrelation){
   fclose(lp_file);
 
   delete[] lp_speechFifteenMinutes;
-}
+}*/
